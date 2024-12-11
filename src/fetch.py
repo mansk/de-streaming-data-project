@@ -5,7 +5,7 @@ import requests
 load_dotenv()
 
 ENDPOINT = "https://content.guardianapis.com"
-API_KEY = os.getenv("GUARDIAN_API_KEY")
+API_KEY = os.getenv("GUARDIAN_API_KEY", default="test")
 
 
 def fetch():
