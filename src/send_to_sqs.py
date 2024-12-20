@@ -1,5 +1,6 @@
 import boto3
 import json
+import logging
 
 
 def send_to_sqs(messages: list[dict], queue: str):
@@ -16,6 +17,7 @@ def send_to_sqs(messages: list[dict], queue: str):
     queue_url = queue_url["QueueUrl"]
 
     # Send to queue
+    logging.info(f"Sending {len(messages)} messages to queue {queue}")
     response = sqs.send_message_batch(QueueUrl=queue_url, Entries=entries)
 
     return response
