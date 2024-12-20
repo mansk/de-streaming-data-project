@@ -1,6 +1,7 @@
 import boto3
 from moto import mock_aws
 import json
+import logging
 import os
 import pytest
 from src.send_to_sqs import send_to_sqs
@@ -56,3 +57,15 @@ def test__send_to_sqs__correctly_sends_json_to_sqs(mock_sqs_client, messages):
             for sent_message in messages
         ]
     )
+
+
+def test__send_to_sqs__logs_number_of_articles_being_sent(
+    mock_sqs_client, messages, caplog
+):
+    test_queue_name = "SENTINEL"
+    response = mock_sqs_client.create_queue(QueueName=test_queue_name)
+
+    with caplog.at_level(logging.INFO):
+        send_to_sqs(messages[:7], test_queue_name)
+
+    assert f"Sending 7 messages to queue {test_queue_name}" in caplog.text
