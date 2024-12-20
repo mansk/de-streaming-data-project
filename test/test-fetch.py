@@ -1,4 +1,5 @@
 from src.fetch import fetch
+import logging
 from unittest.mock import MagicMock, patch
 from urllib.parse import urlparse, parse_qs
 import pytest
@@ -59,3 +60,65 @@ def test_fetch_correctly_constructs_querystring(mock_get):
 
     assert parsed_qs["q"][0] == '"machine learning"'
     assert parsed_qs["from-date"][0] == "2023-01-01"
+
+
+@patch("src.fetch.requests.get")
+def test_fetch_logs_call_with_no_search_term_and_no_date_from(
+    mock_get, response, caplog
+):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = response
+
+    with caplog.at_level(logging.INFO):
+        fetch()
+
+    print(caplog.text)
+
+    assert "Fetching results with no search term" in caplog.text
+    assert "dated" not in caplog.text
+
+
+@patch("src.fetch.requests.get")
+def test_fetch_logs_call_with_search_term_and_no_date_from(mock_get, response, caplog):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = response
+    search_term = "machine learning"
+
+    with caplog.at_level(logging.INFO):
+        fetch(search_term)
+
+    print(caplog.text)
+
+    assert f"Fetching results with search term '{search_term}'" in caplog.text
+    assert "dated" not in caplog.text
+
+
+@patch("src.fetch.requests.get")
+def test_fetch_logs_call_with_no_search_term_and_date_from(mock_get, response, caplog):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = response
+    date_from = "2023-01-01"
+
+    with caplog.at_level(logging.INFO):
+        fetch(None, date_from)
+
+    print(caplog.text)
+
+    assert "Fetching results with no search term" in caplog.text
+    assert f" dated '{date_from}" in caplog.text
+
+
+@patch("src.fetch.requests.get")
+def test_fetch_logs_call_with_search_term_and_date_from(mock_get, response, caplog):
+    mock_get.return_value.status_code = 200
+    mock_get.return_value.json.return_value = response
+    search_term = "machine learning"
+    date_from = "2023-01-01"
+
+    with caplog.at_level(logging.INFO):
+        fetch(search_term, date_from)
+
+    print(caplog.text)
+
+    assert f"Fetching results with search term '{search_term}" in caplog.text
+    assert f" dated '{date_from}" in caplog.text
