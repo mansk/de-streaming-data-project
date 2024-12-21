@@ -72,8 +72,6 @@ def test_fetch_logs_call_with_no_search_term_and_no_date_from(
     with caplog.at_level(logging.INFO):
         fetch()
 
-    print(caplog.text)
-
     assert "Fetching results with no search term" in caplog.text
     assert "dated" not in caplog.text
 
@@ -86,8 +84,6 @@ def test_fetch_logs_call_with_search_term_and_no_date_from(mock_get, response, c
 
     with caplog.at_level(logging.INFO):
         fetch(search_term)
-
-    print(caplog.text)
 
     assert f"Fetching results with search term '{search_term}'" in caplog.text
     assert "dated" not in caplog.text
@@ -102,8 +98,6 @@ def test_fetch_logs_call_with_no_search_term_and_date_from(mock_get, response, c
     with caplog.at_level(logging.INFO):
         fetch(None, date_from)
 
-    print(caplog.text)
-
     assert "Fetching results with no search term" in caplog.text
     assert f" dated '{date_from}" in caplog.text
 
@@ -117,8 +111,6 @@ def test_fetch_logs_call_with_search_term_and_date_from(mock_get, response, capl
 
     with caplog.at_level(logging.INFO):
         fetch(search_term, date_from)
-
-    print(caplog.text)
 
     assert f"Fetching results with search term '{search_term}" in caplog.text
     assert f" dated '{date_from}" in caplog.text
