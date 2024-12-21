@@ -114,3 +114,28 @@ def test_fetch_logs_call_with_search_term_and_date_from(mock_get, response, capl
 
     assert f"Fetching results with search term '{search_term}" in caplog.text
     assert f" dated '{date_from}" in caplog.text
+
+
+@patch("src.fetch.requests.get")
+def test_fetch_logs_failed_api_requests_with_status_code_401(mock_get, caplog):
+    mock_get.return_value.status_code = 401
+
+    with caplog.at_level(logging.ERROR):
+        fetch()
+
+    assert "Failed to fetch results" in caplog.text
+
+
+@patch("src.fetch.requests.get")
+def test_fetch_logs_failed_api_requests_with_non_401_status_code(mock_get, caplog):
+    status_code = 400
+    error_message = "Test error message"
+    mock_get.return_value.status_code = status_code
+    mock_get.return_value.json.return_value = {"response": {"message": error_message}}
+
+    with caplog.at_level(logging.ERROR):
+        fetch()
+
+    assert "Failed to fetch results" in caplog.text
+    assert f"status code {status_code}" in caplog.text
+    assert f"Server returned error message: {error_message}" in caplog.text
