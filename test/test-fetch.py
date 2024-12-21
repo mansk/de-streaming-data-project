@@ -42,9 +42,9 @@ def test_fetch_returns_list_of_length_10(mock_get, response):
 def test_fetch_correctly_constructs_querystring(mock_get):
     url = None
 
-    def side_effect(arg):
+    def side_effect(arg_url, *args, **kwargs):
         nonlocal url
-        url = arg
+        url = arg_url
 
         response = MagicMock()
         response.status_code = 200
