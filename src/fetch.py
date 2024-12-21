@@ -21,7 +21,7 @@ def fetch(search_term: None | str = None, date_from: None | str = None):
         logstring += f", dated '{date_from}' or later"
 
     logging.info(logstring)
-    response = requests.get(f"{ENDPOINT}?{querystring}")
+    response = requests.get(f"{ENDPOINT}?{querystring}", timeout=5)
 
     if response.status_code == 200:
         return response.json()["response"]["results"]
