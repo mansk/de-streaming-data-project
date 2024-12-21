@@ -1,7 +1,7 @@
 from src.fetch import fetch
 import logging
 from unittest.mock import MagicMock, patch
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, unquote
 import pytest
 from test.fixtures import response_fixture
 
@@ -58,7 +58,9 @@ def test_fetch_correctly_constructs_querystring(mock_get):
 
     parsed_qs = parse_qs(urlparse(url).query)
 
+    assert "q" in parsed_qs
     assert parsed_qs["q"][0] == '"machine learning"'
+    assert "from-date" in parsed_qs
     assert parsed_qs["from-date"][0] == "2023-01-01"
 
 
@@ -139,3 +141,30 @@ def test_fetch_logs_failed_api_requests_with_non_401_status_code(mock_get, caplo
     assert "Failed to fetch results" in caplog.text
     assert f"status code {status_code}" in caplog.text
     assert f"Server returned error message: {error_message}" in caplog.text
+
+
+@patch("src.fetch.requests.get")
+def test_fetch_applies_url_encoding_to_query_parameters(mock_get):
+    url = None
+
+    def side_effect(arg_url, *args, **kwargs):
+        nonlocal url
+        url = arg_url
+
+        response = MagicMock()
+        response.status_code = 200
+        response.json.return_value = {"response": {"results": []}}
+
+        return response
+
+    mock_get.side_effect = side_effect
+
+    search_term = "@+/^"
+    date_from = "2010-07-20T10:00:00+05:00"
+
+    fetch(search_term, date_from)
+
+    parsed_qs = parse_qs(urlparse(url).query)
+
+    assert unquote(parsed_qs["q"][0]) == search_term
+    assert unquote(parsed_qs["from-date"][0]) == date_from
