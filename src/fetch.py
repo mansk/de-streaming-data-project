@@ -2,6 +2,7 @@ from dotenv import load_dotenv
 import logging
 import os
 import requests
+from urllib.parse import urlencode
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -11,16 +12,17 @@ API_KEY = os.getenv("GUARDIAN_API_KEY", default="test")
 
 
 def fetch(search_term: None | str = None, date_from: None | str = None):
-    querystring = f"api-key={API_KEY}"
+    params = {"api-key": API_KEY}
     logstring = f"Fetching results with no search term"
     if search_term:
-        querystring += f"&q={search_term}"
+        params["q"] = search_term
         logstring = f"Fetching results with search term '{search_term}'"
     if date_from:
-        querystring += f"&from-date={date_from}"
+        params["from-date"] = date_from
         logstring += f", dated '{date_from}' or later"
 
     logging.info(logstring)
+    querystring = urlencode(params)
     response = requests.get(f"{ENDPOINT}?{querystring}", timeout=5)
 
     if response.status_code == 200:
@@ -31,5 +33,5 @@ def fetch(search_term: None | str = None, date_from: None | str = None):
         )
     else:
         logging.error(f"Failed to fetch results: status code {response.status_code}")
-        if error_message:=response.json()["response"]["message"]:
+        if error_message := response.json()["response"]["message"]:
             logging.error(f"Server returned error message: {error_message}")
