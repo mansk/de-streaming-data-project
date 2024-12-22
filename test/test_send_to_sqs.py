@@ -28,7 +28,10 @@ def mock_sqs_client(aws_credentials):
 @pytest.fixture
 def messages():
     return [
-        {key: message[key] for key in ("webPublicationDate", "webTitle", "webUrl")}
+        {
+            key: message[key]
+            for key in ("webPublicationDate", "webTitle", "webUrl")
+        }
         for message in results_fixture
     ]
 
@@ -44,7 +47,9 @@ def test__send_to_sqs__correctly_sends_json_to_sqs(mock_sqs_client, messages):
         QueueUrl=mock_queue_url, MaxNumberOfMessages=10
     )["Messages"]
 
-    retrieved_messages = [json.loads(message["Body"]) for message in retrieved_messages]
+    retrieved_messages = [
+        json.loads(message["Body"]) for message in retrieved_messages
+    ]
 
     assert all(
         [
@@ -63,7 +68,7 @@ def test__send_to_sqs__logs_number_of_articles_being_sent(
     mock_sqs_client, messages, caplog
 ):
     test_queue_name = "SENTINEL"
-    response = mock_sqs_client.create_queue(QueueName=test_queue_name)
+    mock_sqs_client.create_queue(QueueName=test_queue_name)
 
     with caplog.at_level(logging.INFO):
         send_to_sqs(messages[:7], test_queue_name)

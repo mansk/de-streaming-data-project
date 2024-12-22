@@ -79,7 +79,9 @@ def test_fetch_logs_call_with_no_search_term_and_no_date_from(
 
 
 @patch("src.fetch.requests.get")
-def test_fetch_logs_call_with_search_term_and_no_date_from(mock_get, response, caplog):
+def test_fetch_logs_call_with_search_term_and_no_date_from(
+    mock_get, response, caplog
+):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = response
     search_term = "machine learning"
@@ -92,7 +94,9 @@ def test_fetch_logs_call_with_search_term_and_no_date_from(mock_get, response, c
 
 
 @patch("src.fetch.requests.get")
-def test_fetch_logs_call_with_no_search_term_and_date_from(mock_get, response, caplog):
+def test_fetch_logs_call_with_no_search_term_and_date_from(
+    mock_get, response, caplog
+):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = response
     date_from = "2023-01-01"
@@ -105,7 +109,9 @@ def test_fetch_logs_call_with_no_search_term_and_date_from(mock_get, response, c
 
 
 @patch("src.fetch.requests.get")
-def test_fetch_logs_call_with_search_term_and_date_from(mock_get, response, caplog):
+def test_fetch_logs_call_with_search_term_and_date_from(
+    mock_get, response, caplog
+):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = response
     search_term = "machine learning"
@@ -129,11 +135,15 @@ def test_fetch_logs_failed_api_requests_with_status_code_401(mock_get, caplog):
 
 
 @patch("src.fetch.requests.get")
-def test_fetch_logs_failed_api_requests_with_non_401_status_code(mock_get, caplog):
+def test_fetch_logs_failed_api_requests_with_non_401_status_code(
+    mock_get, caplog
+):
     status_code = 400
     error_message = "Test error message"
     mock_get.return_value.status_code = status_code
-    mock_get.return_value.json.return_value = {"response": {"message": error_message}}
+    mock_get.return_value.json.return_value = {
+        "response": {"message": error_message}
+    }
 
     with caplog.at_level(logging.ERROR):
         fetch()
