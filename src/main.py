@@ -3,7 +3,14 @@ from src.fetch import fetch
 from src.send_to_sqs import send_to_sqs
 
 
-def main(search_term, date_from=None, sqs_queue_name="guardian_content"):
+def main(
+    search_term: str,
+    date_from: None | str = None,
+    sqs_queue_name: str = "guardian_content",
+):
+    """
+    Main function to accept input parameters, fetch results and send to SQS.
+    """
     messages = fetch(search_term, date_from)
 
     if len(messages):
