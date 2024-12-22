@@ -12,7 +12,10 @@ def main(search_term, date_from=None, sqs_queue_name="guardian_content"):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="Fetch up to 10 search results from Guardian API and send to SQS."
+        description=(
+            "Fetch up to 10 search results from "
+            "Guardian API and send to SQS."
+        )
     )
     parser.add_argument(
         "search_term",
@@ -25,7 +28,8 @@ if __name__ == "__main__":
         ),
     )
     parser.add_argument(
-        "--date_from", help="Return only content published on or after this date."
+        "--date_from",
+        help="Return only content published on or after this date.",
     )
     parser.add_argument(
         "--sqs_queue_name",
