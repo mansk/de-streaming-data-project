@@ -3,7 +3,6 @@ name = "de-streaming-project"
 version = "2024.12.23"
 dependencies = [
   "boto3==1.35.81",
-  "python-dotenv==1.0.1",
   "requests==2.32.3"
 ]
 
