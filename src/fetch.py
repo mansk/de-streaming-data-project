@@ -1,7 +1,6 @@
 import boto3
 from botocore.exceptions import ClientError
 import logging
-import os
 import requests
 from urllib.parse import urlencode
 
