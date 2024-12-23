@@ -1,14 +1,13 @@
-from dotenv import load_dotenv
+import boto3
+from botocore.exceptions import ClientError
 import logging
 import os
 import requests
 from urllib.parse import urlencode
 
-load_dotenv()
 logging.basicConfig(level=logging.INFO)
 
 ENDPOINT = "https://content.guardianapis.com/search"
-API_KEY = os.getenv("GUARDIAN_API_KEY", default="test")
 
 
 def fetch(search_term: None | str = None, date_from: None | str = None):
@@ -16,6 +15,19 @@ def fetch(search_term: None | str = None, date_from: None | str = None):
     Fetch information about articles from the Guardian API based on a search
     term and an optional `date_from` parameter.
     """
+
+    logging.info("Retrieving API key from AWS Secrets Manager")
+    sm_client = boto3.client("secretsmanager")
+    try:
+        response = sm_client.get_secret_value(SecretId="GUARDIAN_API_KEY")
+
+        API_KEY = response["SecretString"]
+    except ClientError as e:
+        logging.error(
+            "Failed to retrieve Guardian API key from Secrets Manager: ",
+            f"{e.response["Error"]["Message"]}",
+        )
+
     params = {"api-key": API_KEY}
     logstring = "Fetching results with no search term"
     if search_term:

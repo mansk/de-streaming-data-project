@@ -1,9 +1,31 @@
 from src.fetch import fetch
+import boto3
 import logging
+from moto import mock_aws
+import os
 from unittest.mock import MagicMock, patch
 from urllib.parse import urlparse, parse_qs, unquote
 import pytest
 from test.fixtures import response_fixture
+
+
+@pytest.fixture(scope="function")
+def aws_credentials():
+    """Mocked AWS Credentials for moto."""
+    os.environ["AWS_ACCESS_KEY_ID"] = "testing"
+    os.environ["AWS_SECRET_ACCESS_KEY"] = "testing"
+    os.environ["AWS_SECURITY_TOKEN"] = "testing"
+    os.environ["AWS_SESSION_TOKEN"] = "testing"
+    os.environ["AWS_DEFAULT_REGION"] = "eu-west-2"
+
+
+@pytest.fixture(scope="function")
+def mock_sm_client(aws_credentials):
+    """Return a mocked Secrets Manager client with a stored secret."""
+    with mock_aws():
+        client = boto3.client("secretsmanager", region_name="eu-west-2")
+        client.create_secret(Name="GUARDIAN_API_KEY", SecretString="test")
+        yield client
 
 
 @pytest.fixture
@@ -12,7 +34,7 @@ def response():
 
 
 @patch("src.fetch.requests.get")
-def test_fetch_returns_list(mock_get, response):
+def test_fetch_returns_list(mock_get, mock_sm_client, response):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = response
     result = fetch()
@@ -21,7 +43,7 @@ def test_fetch_returns_list(mock_get, response):
 
 
 @patch("src.fetch.requests.get")
-def test_fetch_returns_list_of_dicts(mock_get, response):
+def test_fetch_returns_list_of_dicts(mock_get, mock_sm_client, response):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = response
     result = fetch()
@@ -30,7 +52,7 @@ def test_fetch_returns_list_of_dicts(mock_get, response):
 
 
 @patch("src.fetch.requests.get")
-def test_fetch_returns_list_of_length_10(mock_get, response):
+def test_fetch_returns_list_of_length_10(mock_get, mock_sm_client, response):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = response
     result = fetch()
@@ -39,7 +61,7 @@ def test_fetch_returns_list_of_length_10(mock_get, response):
 
 
 @patch("src.fetch.requests.get")
-def test_fetch_correctly_constructs_querystring(mock_get):
+def test_fetch_correctly_constructs_querystring(mock_get, mock_sm_client):
     url = None
 
     def side_effect(arg_url, *args, **kwargs):
@@ -66,7 +88,7 @@ def test_fetch_correctly_constructs_querystring(mock_get):
 
 @patch("src.fetch.requests.get")
 def test_fetch_logs_call_with_no_search_term_and_no_date_from(
-    mock_get, response, caplog
+    mock_get, mock_sm_client, response, caplog
 ):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = response
@@ -80,7 +102,7 @@ def test_fetch_logs_call_with_no_search_term_and_no_date_from(
 
 @patch("src.fetch.requests.get")
 def test_fetch_logs_call_with_search_term_and_no_date_from(
-    mock_get, response, caplog
+    mock_get, mock_sm_client, response, caplog
 ):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = response
@@ -95,7 +117,7 @@ def test_fetch_logs_call_with_search_term_and_no_date_from(
 
 @patch("src.fetch.requests.get")
 def test_fetch_logs_call_with_no_search_term_and_date_from(
-    mock_get, response, caplog
+    mock_get, mock_sm_client, response, caplog
 ):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = response
@@ -110,7 +132,7 @@ def test_fetch_logs_call_with_no_search_term_and_date_from(
 
 @patch("src.fetch.requests.get")
 def test_fetch_logs_call_with_search_term_and_date_from(
-    mock_get, response, caplog
+    mock_get, mock_sm_client, response, caplog
 ):
     mock_get.return_value.status_code = 200
     mock_get.return_value.json.return_value = response
@@ -125,7 +147,9 @@ def test_fetch_logs_call_with_search_term_and_date_from(
 
 
 @patch("src.fetch.requests.get")
-def test_fetch_logs_failed_api_requests_with_status_code_401(mock_get, caplog):
+def test_fetch_logs_failed_api_requests_with_status_code_401(
+    mock_get, mock_sm_client, caplog
+):
     mock_get.return_value.status_code = 401
 
     with caplog.at_level(logging.ERROR):
@@ -136,7 +160,7 @@ def test_fetch_logs_failed_api_requests_with_status_code_401(mock_get, caplog):
 
 @patch("src.fetch.requests.get")
 def test_fetch_logs_failed_api_requests_with_non_401_status_code(
-    mock_get, caplog
+    mock_get, mock_sm_client, caplog
 ):
     status_code = 400
     error_message = "Test error message"
@@ -154,7 +178,9 @@ def test_fetch_logs_failed_api_requests_with_non_401_status_code(
 
 
 @patch("src.fetch.requests.get")
-def test_fetch_applies_url_encoding_to_query_parameters(mock_get):
+def test_fetch_applies_url_encoding_to_query_parameters(
+    mock_get, mock_sm_client
+):
     url = None
 
     def side_effect(arg_url, *args, **kwargs):
