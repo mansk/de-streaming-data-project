@@ -31,6 +31,11 @@ To run the application from the command line, make sure the virtual environment 
 source venv/bin/activate
 ```
 
+Set the `PYTHONPATH` environment variable to the current directory:
+```sh
+export PYTHONPATH=$(pwd)
+```
+
 Then use the following command:
 ```sh
 python src/main.py "search_term" --date_from "YYYY-MM-DD" --sqs_queue_name "queue_name"
