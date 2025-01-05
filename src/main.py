@@ -1,6 +1,10 @@
 import argparse
-from src.fetch import fetch
-from src.send_to_sqs import send_to_sqs
+try:
+    from src.fetch import fetch
+    from src.send_to_sqs import send_to_sqs
+except ModuleNotFoundError:
+    from fetch import fetch
+    from send_to_sqs import send_to_sqs
 
 
 def main(
