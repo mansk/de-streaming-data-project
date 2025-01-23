@@ -25,7 +25,7 @@ def fetch(search_term: None | str = None, date_from: None | str = None):
     except ClientError as e:
         logging.error(
             "Failed to retrieve Guardian API key from Secrets Manager: ",
-            f"{e.response["Error"]["Message"]}",
+            f"{e.response['Error']['Message']}",
         )
 
     params = {"api-key": API_KEY}
