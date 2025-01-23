@@ -7,6 +7,7 @@ from urllib.parse import urlencode
 logging.basicConfig(level=logging.INFO)
 
 ENDPOINT = "https://content.guardianapis.com/search"
+API_KEY= "test"
 
 
 def fetch(search_term: None | str = None, date_from: None | str = None):
