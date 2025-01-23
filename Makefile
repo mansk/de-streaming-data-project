@@ -7,12 +7,8 @@ PIP := pip
 
 ## Create python interpreter environment.
 create-environment:
-	@if [ ! -d "venv" ]; then \
-	    echo ">>> Creating virtual environment for $(PROJECT_NAME)"; \
-	    $(PYTHON) -m venv venv; \
-	else \
-	    echo ">>> Virtual environment found for $(PROJECT_NAME)"; \
-	fi
+	echo ">>> Creating virtual environment for $(PROJECT_NAME)"; \
+	$(PYTHON) -m venv venv;
 
 # Define utility variable to help calling executables from the virtual environment
 ACTIVATE_ENV := source venv/bin/activate
@@ -23,14 +19,14 @@ endef
 
 ## Build the environment requirements
 requirements: create-environment
-	$(call execute_in_env,$(PIP) install pip-tools)
+	$(call execute_in_env,$(PIP) install --upgrade pip pip-tools setuptools)
 	$(call execute_in_env,pip-compile --output-file requirements.txt pyproject.toml)
 	$(call execute_in_env,$(PIP) install -r ./requirements.txt)
 	@rm -rf src/*egg-info
 
 ## Build the environment requirements, including dependencies for tests and checks
 dev-requirements: create-environment
-	$(call execute_in_env,$(PIP) install pip-tools)
+	$(call execute_in_env,$(PIP) install --upgrade pip pip-tools setuptools)
 	$(call execute_in_env,pip-compile --extra dev --output-file dev-requirements.txt pyproject.toml)
 	$(call execute_in_env,$(PIP) install -r ./dev-requirements.txt)
 	@rm -rf src/*egg-info
