@@ -7,8 +7,8 @@ The application ensures that each message has at least "webPublicationDate", "we
 
 
 ## Prerequisites
-- **Python**
-- **AWS account**: Required to use AWS SQS and Secrets Manager.
+- **Python** [Python Installation Guide](https://www.python.org/downloads/)
+- **AWS account**: Required to use AWS SQS and Secrets Manager. [Sign up for AWS](https://aws.amazon.com/)
 - **Guardian API key**: Obtain a free API key from the Guardian at https://open-platform.theguardian.com
 
 
@@ -20,8 +20,20 @@ The application ensures that each message has at least "webPublicationDate", "we
    make all
    ```
 3. **Store the Guardian API key in AWS Secrets Manager**:
-   The name of the secret should be `GUARDIAN_API_KEY`.
+   The name of the secret should be `GUARDIAN_API_KEY`. [AWS Secrets Manager Documentation](https://docs.aws.amazon.com/secretsmanager/)
+
+   If using the AWS CLI:
+   ```sh
+   aws secretsmanager create-secret --name GUARDIAN_API_KEY --secret-string "your-api-key-here"
+   ```
 4. **Create a target queue in Amazon SQS.**
+   [Amazon Simple Queue Service Documentation](https://docs.aws.amazon.com/sqs/)
+
+   If using the AWS CLI:
+   ```sh
+   aws sqs create-queue --queue-name guardian_content
+   ```
+
 
 
 ## Usage
@@ -59,6 +71,38 @@ The Makefile includes a target that will package the code into a zip file for an
    make lambda_layer
    ```
 
+This will output a ZIP file, `lambda_layer.zip`. Details on how to deploy a ZIP file as an AWS Lambda layer can be found at the [AWS Lambda Documentation](https://docs.aws.amazon.com/lambda/latest/dg/creating-deleting-layers.html).
+
+
+## Testing
+
+The project includes unit tests, security checks, and code quality checks to ensure the integrity and security of the application.
+
+### Unit Tests
+To run the tests using `pytest`, run the following command:
+```sh
+make test
+```
+
+### Security Checks
+
+To run security checks using [Bandit](https://bandit.readthedocs.io/en/latest/) and [pip-audit](https://pypi.org/project/pip-audit/), use:
+```sh
+make bandit
+make pip-audit
+```
+
+### Code Quality Checks
+
+To run code quality checks using [Flake8](https://flake8.pycqa.org/) for PEP 8 compliance and [Black](https://black.readthedocs.io/en/stable/) for further code formatting:
+```sh
+make lint
+make format
+```
+
+For more about Flake8 and Black, refer to the respective documentation:
+- [Flake8 Documentation](https://flake8.pycqa.org/)
+- [Black Documentation](https://black.readthedocs.io/en/stable/)
 
 ## Future tasks
 1. Use Terraform to provision all necessary AWS infrastructure.
