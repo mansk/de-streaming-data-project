@@ -7,7 +7,7 @@ The application ensures that each message has at least "webPublicationDate", "we
 
 
 ## Prerequisites
-- **Python** [Python Installation Guide](https://www.python.org/downloads/)
+- **Python**: Version 3.10 or greater required. [Python Installation Guide](https://www.python.org/downloads/)
 - **AWS account**: Required to use AWS SQS and Secrets Manager. [Sign up for AWS](https://aws.amazon.com/)
 - **Guardian API key**: Obtain a free API key from the Guardian at https://open-platform.theguardian.com
 
