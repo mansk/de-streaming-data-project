@@ -1,6 +1,7 @@
 [project]
 name = "de-streaming-project"
-version = "2024.12.23"
+requires-python = ">=3.10"
+version = "2025.01.23"
 dependencies = [
   "boto3==1.35.81",
   "requests==2.32.3"
@@ -8,10 +9,10 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-  "bandit==1.8.0",
-  "black==24.10.0",
-  "flake8==7.1.1",
+  "bandit>=1.8.0",
+  "black>=24.10.0",
+  "flake8>=7.1.1",
   "moto==5.0.22",
   "pytest==8.3.4",
-  "pip-audit"
+  "pip-audit>=2.7.3"
 ]
