@@ -25,7 +25,8 @@ def main(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description=(
-            "Fetch up to 10 search results from " "Guardian API and send to SQS."
+            "Fetch up to 10 search results from "
+            "Guardian API and send to SQS."
         )
     )
     parser.add_argument(
