@@ -45,7 +45,7 @@ all: run-checks
 	@echo "python src/main.py search_term [--date_from DATE_FROM] [--sqs_queue_name SQS_QUEUE_NAME]"
 
 # Run all checks
-run-checks: dev-requirements test bandit safety lint format
+run-checks: dev-requirements test bandit pip-audit lint format
 
 # Run unit tests
 test: dev-requirements
@@ -55,9 +55,9 @@ test: dev-requirements
 bandit: dev-requirements
 	$(call execute_in_env,bandit -r src/)
 
-# Run Safety for dependency vulnerability checks
-safety: dev-requirements
-	$(call execute_in_env,safety check -r dev-requirements.txt)
+# Run pip-audit for dependency vulnerability checks
+pip-audit: dev-requirements
+	$(call execute_in_env,pip-audit)
 
 # Lint code for PEP 8 compliance
 lint: dev-requirements
