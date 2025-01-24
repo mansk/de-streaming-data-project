@@ -16,7 +16,7 @@ def fetch(search_term: None | str = None, date_from: None | str = None):
     """
 
     logging.info("Retrieving API key from AWS Secrets Manager")
-    sm_client = boto3.client("secretsmanager")
+    sm_client = boto3.client("secretsmanager", region_name="eu-west-2")
     try:
         response = sm_client.get_secret_value(SecretId="GUARDIAN_API_KEY")
 
