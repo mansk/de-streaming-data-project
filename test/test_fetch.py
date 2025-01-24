@@ -28,6 +28,14 @@ def mock_sm_client(aws_credentials):
         yield client
 
 
+@pytest.fixture(scope="function")
+def mock_sm_client_no_api_key(aws_credentials):
+    """Return a mocked Secrets Manager client without a stored secret."""
+    with mock_aws():
+        client = boto3.client("secretsmanager", region_name="eu-west-2")
+        yield client
+
+
 @pytest.fixture
 def response():
     return response_fixture
@@ -204,3 +212,15 @@ def test_fetch_applies_url_encoding_to_query_parameters(
 
     assert unquote(parsed_qs["q"][0]) == search_term
     assert unquote(parsed_qs["from-date"][0]) == date_from
+
+
+@patch("src.fetch.requests.get")
+def test_fetch_logs_failure_to_retrieve_api_key_from_aws_sm(
+    mock_get, mock_sm_client_no_api_key, caplog
+):
+    search_term = "machine learning"
+
+    with caplog.at_level(logging.ERROR):
+        fetch(search_term)
+
+    assert "Failed to retrieve Guardian API key" in caplog.text
