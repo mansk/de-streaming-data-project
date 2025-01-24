@@ -7,7 +7,7 @@ PIP := pip
 
 ## Create python interpreter environment.
 create-environment:
-	echo ">>> Creating virtual environment for $(PROJECT_NAME)"; \
+	@echo ">>> Creating virtual environment for $(PROJECT_NAME)"; \
 	$(PYTHON) -m venv venv;
 
 # Define utility variable to help calling executables from the virtual environment
