@@ -7,7 +7,6 @@ from urllib.parse import urlencode
 logging.basicConfig(level=logging.INFO)
 
 ENDPOINT = "https://content.guardianapis.com/search"
-API_KEY = "test"
 
 
 def fetch(search_term: None | str = None, date_from: None | str = None):
@@ -23,10 +22,11 @@ def fetch(search_term: None | str = None, date_from: None | str = None):
 
         API_KEY = response["SecretString"]
     except ClientError as e:
+        print(e)
         logging.error(
-            "Failed to retrieve Guardian API key from Secrets Manager: ",
-            f"{e.response['Error']['Message']}",
+            "Failed to retrieve Guardian API key from Secrets Manager"
         )
+        return
 
     params = {"api-key": API_KEY}
     logstring = "Fetching results with no search term"
