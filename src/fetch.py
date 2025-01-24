@@ -21,7 +21,7 @@ def fetch(search_term: None | str = None, date_from: None | str = None):
         response = sm_client.get_secret_value(SecretId="GUARDIAN_API_KEY")
 
         API_KEY = response["SecretString"]
-    except ClientError as e:
+    except ClientError:
         logging.error(
             "Failed to retrieve Guardian API key from Secrets Manager"
         )
